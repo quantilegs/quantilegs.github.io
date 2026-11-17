@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<!-- Adapted from Academic Project Page Template by Eliahu Horwitz / Nerfies. -->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>QuantileGS: Quantile-Based Conformal Bounds on RGB Rendering Errors for Novel View Synthesis with 3D Gaussian Splatting</title>
+  <meta name="description" content="QuantileGS learns and calibrates rendering-error quantiles for 3D Gaussian Splatting while preserving the pretrained RGB renderer.">
+  <meta name="author" content="Haiyang Xu, Ziye Zhang, Bin Pan, Zhenwei Shi">
+  <meta name="keywords" content="QuantileGS, 3D Gaussian Splatting, uncertainty quantification, conformal prediction, quantile regression, novel view synthesis">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#71558a">
+  <meta property="og:title" content="QuantileGS: Quantile-Based Conformal Bounds on RGB Rendering Errors for Novel View Synthesis with 3D Gaussian Splatting">
+  <meta property="og:description" content="Post-hoc quantile fields. Spatially adaptive calibration. Uncertainty for downstream decisions.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://quantilegs.github.io/">
+  <meta property="og:image" content="https://quantilegs.github.io/static/images/teaser-overview.webp">
+  <link rel="canonical" href="https://quantilegs.github.io/">
+  <meta name="citation_pdf_url" content="https://arxiv.org/pdf/2611.21253">
+  <meta name="citation_arxiv_id" content="2611.21253">
+  <meta name="citation_title" content="QuantileGS: Quantile-Based Conformal Bounds on RGB Rendering Errors for Novel View Synthesis with 3D Gaussian Splatting">
+  <meta name="citation_author" content="Xu, Haiyang">
+  <meta name="citation_author" content="Zhang, Ziye">
+  <meta name="citation_author" content="Pan, Bin">
+  <meta name="citation_author" content="Shi, Zhenwei">
+  <link rel="icon" type="image/svg+xml" href="static/images/favicon.svg">
+  <link rel="stylesheet" href="static/css/bulma.min.css">
+  <link rel="stylesheet" href="static/css/template.css">
+  <link rel="stylesheet" href="static/css/quantilegs.css">
+  <script src="static/js/site-config.js" defer></script>
+  <script src="static/js/quantilegs.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <nav class="site-nav" aria-label="Main navigation">
+    <div class="nav-inner">
+      <a href="#top" class="wordmark" aria-label="QuantileGS home"><span class="brand-dot" aria-hidden="true"></span>Quantile<span>GS</span></a>
+      <div class="nav-links"><a href="#abstract">Abstract</a><a href="#method">Method</a><a href="#results">Results</a><a href="#applications">Applications</a><a href="#citation">Citation</a></div>
+    </div>
+  </nav>
+
+  <main id="main">
+    <header class="hero publication-header" id="top">
+      <div class="hero-body">
+        <div class="container has-text-centered">
+          <h1 class="publication-title"><span class="title-brand">QuantileGS</span><span class="title-description">Quantile-Based Conformal Bounds on RGB Rendering Errors<br class="desktop-break"> for Novel View Synthesis with 3D Gaussian Splatting</span></h1>
+          <div class="publication-authors">
+            <span class="author-block"><a href="https://github.com/Voyagerlemon" target="_blank" rel="noopener noreferrer">Haiyang Xu</a><sup>1,†</sup></span>
+            <span class="author-block"><a href="https://github.com/ziye5731" target="_blank" rel="noopener noreferrer">Ziye Zhang</a><sup>1,†</sup></span>
+            <span class="author-block">Bin Pan<sup>1,*</sup></span>
+            <span class="author-block">Zhenwei Shi<sup>2</sup></span>
+          </div>
+          <p class="affiliations"><span><sup>1</sup> School of Statistics and Data Science, Nankai University</span><span><sup>2</sup> School of Astronautics, Beihang University</span></p>
+          <p class="author-notes">† Equal contribution &nbsp; · &nbsp; * Corresponding author</p>
+          <div class="publication-links" aria-label="Research resources">
+            <a class="resource-link" data-resource="arxiv" href="https://arxiv.org/abs/2611.21253" target="_blank" rel="noopener noreferrer"><img class="resource-icon" src="static/images/arxiv-logomark.svg" width="20" height="20" alt="" aria-hidden="true">arXiv</a>
+            <a class="resource-link" data-resource="code" href="https://github.com/Lab-PANbin/QuantileGS" target="_blank" rel="noopener noreferrer"><img class="resource-icon" src="static/images/github-invertocat.svg" width="20" height="20" alt="" aria-hidden="true">Code</a>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <section class="teaser section-tight" aria-label="QuantileGS at a glance">
+      <div class="container wide-container">
+        <figure class="teaser-figure">
+          <button class="image-button" data-zoom="static/images/teaser-overview.webp" data-pdf="static/pdfs/teaser-overview.pdf" data-caption="QuantileGS overview" aria-label="Enlarge QuantileGS overview"><img src="static/images/teaser-overview.webp" alt="QuantileGS overview: pretrained 3DGS and fitting views, rendering-error quantiles, conformal calibration, and downstream applications" width="3200" height="832" fetchpriority="high"></button>
+        </figure>
+      </div>
+    </section>
+
+    <section class="section abstract-section" id="abstract">
+      <div class="container reading-container">
+        <h2 class="title is-3">Abstract</h2>
+        <div class="content abstract-copy">
+          <p>Uncertainty quantification for novel view synthesis with 3D Gaussian Splatting (3DGS) assesses rendering reliability at unseen viewpoints. This reliability depends on the discrepancy between rendered and true colors, which cannot be measured without ground-truth images. We therefore quantify uncertainty in this unknown discrepancy through upper bounds on per-pixel RGB mean absolute error. However, learned bounds may underestimate these errors and overstate rendering reliability, motivating calibration to a prescribed coverage level. In this paper, we propose QuantileGS, a post-hoc framework that combines learned rendering-error quantiles with scale-normalized conformal calibration to produce spatially adaptive error bounds. The framework comprises three phases. Phase 1, Rendering-Error Computation, measures RGB mean absolute error between observed images and predictions from a frozen 3DGS model. Phase 2, Ordered Gaussian Quantile Fields, learns two scalar attributes per Gaussian to predict lower and upper rendering-error quantiles. Phase 3, Scale-Normalized Conformal Calibration, calibrates the upper prediction on held-out images, using the quantile gap to scale the correction. Under the stated assumptions, the resulting bounds provide finite-sample marginal coverage. At a nominal coverage level of 90%, calibration raises mean empirical test coverage from 69.6% to 89.6% on LLFF and from 80.1% to 92.1% on Mip-NeRF 360. On LF, coverage remains conservative at 96.3% before and 96.4% after calibration. Applications to active view selection, Gaussian pruning, and RGB-D simultaneous localization and mapping illustrate how these bounds inform downstream decisions.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section highlights-section" aria-label="Our contributions">
+      <div class="container wide-container">
+        <div class="highlight-grid contribution-grid">
+          <article><span class="feature-number">01</span><h3>Post-hoc Gaussian quantile fields</h3><p>We learn ordered rendering-error quantiles using two attributes per Gaussian and explicit background contributions, while preserving the pretrained RGB renderer.</p></article>
+          <article><span class="feature-number">02</span><h3>Spatially adaptive conformal calibration</h3><p>We use the learned interquantile gap to scale calibration locally, obtaining finite-sample marginal coverage under exchangeability of calibration and test scores.</p></article>
+          <article><span class="feature-number">03</span><h3>UQ and downstream evaluation</h3><p>We evaluate uncertainty on three novel-view-synthesis datasets and apply the calibrated bounds to active view selection, Gaussian pruning, and SLAM.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section method-only" id="method" aria-label="Method overview">
+      <div class="container wide-container">
+        <figure class="paper-figure method-figure"><button class="image-button" data-zoom="static/images/method.webp" data-pdf="static/pdfs/method.pdf" data-caption="QuantileGS method overview" aria-label="Enlarge QuantileGS method overview"><img src="static/images/method.webp" alt="QuantileGS pipeline: rendering-error observations, Gaussian quantile fitting with a frozen geometry branch, and conformal calibration" loading="lazy" width="3200" height="1302"></button></figure>
+      </div>
+    </section>
+
+    <section class="section tinted-section" id="results">
+      <div class="container wide-container">
+        <div class="section-intro"><p class="section-kicker">Uncertainty quantification</p><h2 class="title is-3">Visualize rendering reliability</h2><p>Comparisons on LLFF, Mip-NeRF 360, and LF. QuantileGS-U and QuantileGS-C denote predictions before and after calibration.</p></div>
+        <div class="tab-group" data-tab-group>
+          <div class="tab-list" role="tablist" aria-label="UQ comparisons"><button role="tab" id="uq-main-tab" aria-controls="uq-main" aria-selected="true">Main comparisons</button><button role="tab" id="uq-more-tab" aria-controls="uq-more" aria-selected="false" tabindex="-1">Additional scenes</button></div>
+          <div id="uq-main" role="tabpanel" aria-labelledby="uq-main-tab"><figure class="paper-figure"><button class="image-button" data-zoom="static/images/uq-comparison.webp" data-pdf="static/pdfs/uq-comparison.pdf" data-caption="UQ comparisons · bicycle, counter, fern, horns, basket" aria-label="Enlarge main uncertainty comparison"><img src="static/images/uq-comparison.webp" alt="Ground truth, rendered RGB, rendering errors and uncertainty maps for bicycle, counter, fern, horns and basket" loading="lazy" width="2640" height="1182"></button><figcaption>Scenes from top to bottom: Mip-NeRF 360 bicycle and counter, LLFF fern and horns, and LF basket.</figcaption></figure></div>
+          <div id="uq-more" role="tabpanel" aria-labelledby="uq-more-tab" hidden><figure class="paper-figure"><button class="image-button" data-zoom="static/images/uq-supp.webp" data-pdf="static/pdfs/uq-supp.pdf" data-caption="Additional UQ comparisons" aria-label="Enlarge supplementary uncertainty comparison"><img src="static/images/uq-supp.webp" alt="Additional qualitative uncertainty comparisons on selected LLFF, Mip-NeRF 360 and LF scenes" loading="lazy" width="2640" height="1182"></button><figcaption>Additional selected scenes from the supplementary material.</figcaption></figure></div>
+        </div>
+        <div class="calibration-block"><h3 class="subsection-title">What changes after calibration?</h3><p class="section-lead">Calibration reduces average undercoverage on LLFF and Mip-NeRF 360, with wider error bounds. LF predictions are already conservative before calibration.</p>
+          <div class="table-scroll"><table class="results-table calibration-table"><caption>Equal-scene means at a nominal coverage level of 90%. Mean bounds are in RGB-MAE units.</caption><thead><tr><th rowspan="2" scope="col">Dataset</th><th colspan="2" scope="colgroup">Empirical coverage (%)</th><th colspan="2" scope="colgroup">Mean error bound</th></tr><tr><th scope="col">Uncalibrated</th><th scope="col">Calibrated</th><th scope="col">Uncalibrated</th><th scope="col">Calibrated</th></tr></thead><tbody><tr><th scope="row">LLFF</th><td>69.56</td><td class="ours-cell">89.61</td><td>0.0413</td><td class="ours-cell">0.0965</td></tr><tr><th scope="row">Mip-NeRF 360</th><td>80.07</td><td class="ours-cell">92.15</td><td>0.0513</td><td class="ours-cell">0.0929</td></tr><tr><th scope="row">LF</th><td>96.32</td><td class="ours-cell">96.39</td><td>0.0684</td><td class="ours-cell">0.0691</td></tr></tbody></table></div>
+          <figure class="paper-figure coverage-figure"><button class="image-button" data-zoom="static/images/coverage.webp" data-pdf="static/pdfs/coverage.pdf" data-caption="Empirical coverage across nominal levels" aria-label="Enlarge empirical coverage curves"><img src="static/images/coverage.webp" alt="Coverage curves from the paper on the three novel-view-synthesis datasets" loading="lazy" width="2640" height="494"></button><figcaption>Empirical coverage across nominal levels. These measurements do not establish conditional coverage at every view or pixel.</figcaption></figure>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="applications">
+      <div class="container wide-container">
+        <div class="section-intro"><p class="section-kicker">Downstream applications</p><h2 class="title is-3">Put uncertainty to work</h2><p>Calibrated rendering-error bounds inform three decisions: which view to acquire, which Gaussians to retain, and how to weight tracking residuals.</p></div>
+        <div class="tab-group applications-tabs" data-tab-group>
+          <div class="tab-list" role="tablist" aria-label="Downstream applications"><button role="tab" id="avs-tab" aria-controls="avs" aria-selected="true">Active view selection</button><button role="tab" id="pruning-tab" aria-controls="pruning" aria-selected="false" tabindex="-1">Gaussian pruning</button><button role="tab" id="slam-tab" aria-controls="slam" aria-selected="false" tabindex="-1">SLAM</button></div>
+          <div id="avs" role="tabpanel" aria-labelledby="avs-tab">
+            <div class="application-layout"><div class="application-copy"><span class="application-index">01 / Acquisition</span><h3>Weight prediction-variance reduction</h3><p>Use the calibrated bound as a target-importance weight when scoring candidate views. Select one view at a time, from four initial views to 20 reconstruction views.</p><p>QuantileGS obtains the highest mean PSNR in this comparison. PRIMU has slightly higher SSIM, and the two methods tie in LPIPS at the displayed precision.</p><p class="protocol-note">Nine Mip-NeRF 360 scenes. QuantileGS uses seed 0. Random is averaged over seeds 0, 1, and 2. Reserved UQ views are additional observations.</p></div>
+            <div class="table-scroll"><table class="results-table"><caption>AVS with 20 reconstruction views · nine-scene means</caption><thead><tr><th scope="col">Method</th><th scope="col">PSNR ↑</th><th scope="col">SSIM ↑</th><th scope="col">LPIPS ↓</th></tr></thead><tbody><tr><th scope="row">Random</th><td>19.361</td><td>0.584</td><td>0.364</td></tr><tr><th scope="row">FisherRF</th><td>20.316</td><td>0.597</td><td>0.355</td></tr><tr><th scope="row">Manifold</th><td>20.543</td><td>0.609</td><td>0.338</td></tr><tr><th scope="row">PRIMU</th><td>20.846</td><td>0.636</td><td>0.328</td></tr><tr class="ours-row"><th scope="row">QuantileGS</th><td>21.090</td><td>0.635</td><td>0.328</td></tr></tbody></table></div></div>
+          </div>
+          <div id="pruning" role="tabpanel" aria-labelledby="pruning-tab" hidden>
+            <div class="application-heading"><div><span class="application-index">02 / Compression</span><h3>Rank the risk of Gaussian removal</h3><p>Combine predicted error bounds with deletion sensitivity to prioritize low-risk primitives.</p></div><div class="scene-switch" aria-label="Pruning scene"><button type="button" data-pruning-scene="kitchen" aria-pressed="true">Kitchen</button><button type="button" data-pruning-scene="bicycle" aria-pressed="false">Bicycle</button></div></div>
+            <figure class="paper-figure"><button id="pruning-image-button" class="image-button" data-zoom="static/images/pruning-kitchen.webp" data-pdf="static/pdfs/pruning-kitchen.pdf" data-caption="Pruning comparison · Mip-NeRF 360 kitchen" aria-label="Enlarge pruning comparison"><img id="pruning-image" src="static/images/pruning-kitchen.webp" alt="Kitchen renderings and RGB-MAE maps at 20 and 10 percent Gaussian retention" loading="lazy" width="2440" height="1303"></button><figcaption>RGB renderings and error maps at 20% and 10% retention. Ground truth, unpruned 3DGS, LightGaussian, PUP 3D-GS, and QuantileGS are compared.</figcaption></figure>
+            <p class="result-takeaway">At 10% retention, QuantileGS achieves <strong>26.849 dB</strong> mean PSNR, compared with 26.579 dB for PUP 3D-GS and 26.328 dB for LightGaussian. Both baselines retain better SSIM and LPIPS.</p>
+          </div>
+          <div id="slam" role="tabpanel" aria-labelledby="slam-tab" hidden>
+            <div class="application-heading"><div><span class="application-index">03 / Tracking</span><h3>Scale photometric residuals with uncertainty</h3><p>Use calibrated error bounds in RGB-D tracking, with online feedback to adjust calibration over time.</p></div></div>
+            <div class="inline-metrics"><div><strong>0.290 <small>cm</small></strong><span>Mean ATE ↓</span></div><div><strong>0.0046 <small>cm</small></strong><span>Mean translational RPE ↓</span></div><div><strong>1.058</strong><span>Mean algorithm FPS ↑</span></div></div>
+            <p class="protocol-note">Eight Replica sequences, seed 0, NVIDIA RTX 3090 (24 GB). Each method retains its own settings. Throughput excludes input decoding and evaluation.</p>
+            <figure class="paper-figure video-figure">
+              <video id="slam-video" controls playsinline preload="metadata" poster="static/images/slam-video-poster.webp" width="1920" height="1080" aria-label="Replica room0 synchronized camera trajectory comparison">
+                <source src="static/videos/slam-room0-comparison.mp4" type="video/mp4">
+                <a href="static/videos/slam-room0-comparison.mp4">Download the SLAM comparison video.</a>
+              </video>
+              <figcaption>Synchronized camera trajectories on Replica room0. Green: ground truth. Red: estimated. Local views follow the same ground-truth position.</figcaption>
+              <div class="video-links"><a href="static/videos/slam-room0-comparison.mp4" download>Download video · 1080p</a><a href="static/pdfs/slam-trajectories.pdf" target="_blank" rel="noopener">Trajectory figure · PDF ↗</a></div>
+            </figure>
+            <h4 class="small-heading">Online calibration</h4><p class="section-lead">Feedback raises mean pre-update holdout coverage from <strong>87.87%</strong> to <strong>89.59%</strong>, towards the nominal 90% level.</p>
+            <figure class="paper-figure"><button class="image-button" data-zoom="static/images/slam-calibration.webp" data-pdf="static/pdfs/slam-calibration.pdf" data-caption="Replica · fixed and online calibration" aria-label="Enlarge online calibration curves"><img src="static/images/slam-calibration.webp" alt="Fixed and online coverage curves across all eight Replica sequences with a 90 percent target" loading="lazy" width="2200" height="960"></button><figcaption>Coverage on reserved RGB pixels before map updates, evaluated at 399 frames per scene. Per-frame coverage is assessed empirically.</figcaption></figure>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section citation-section" id="citation">
+      <div class="container reading-container">
+        <div class="citation-heading"><div><p class="section-kicker">Citation</p><h2 class="title is-3">BibTeX</h2></div><button type="button" id="copy-citation" class="copy-button">Copy BibTeX</button></div>
+        <pre class="bibtex"><code id="bibtex-code">@misc{xu2026quantilegs,
+  title  = {QuantileGS: Quantile-Based Conformal Bounds on RGB Rendering Errors
+            for Novel View Synthesis with 3D Gaussian Splatting},
+  author = {Haiyang Xu and Ziye Zhang and Bin Pan and Zhenwei Shi},
+  year   = {2026},
+  eprint = {2611.21253},
+  archivePrefix = {arXiv},
+  url    = {https://arxiv.org/abs/2611.21253}
+}</code></pre>
+        <span id="copy-status" class="sr-only" role="status" aria-live="polite"></span>
+      </div>
+    </section>
+  </main>
+
+  <dialog id="image-dialog" aria-label="Enlarged research figure"><div class="dialog-toolbar"><p id="dialog-caption"></p><div><a id="dialog-original" href="#" target="_blank" rel="noopener">Open PDF ↗</a><button id="close-dialog" type="button" aria-label="Close enlarged figure">✕</button></div></div><div class="dialog-image-area"><img id="dialog-image" alt="Enlarged research figure"></div></dialog>
+</body>
+</html>
